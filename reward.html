@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 REWARD CLAIM - Nitro Robux Minecraft</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: rgba(0,0,0,0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #7289da;
+        }
+        h1 { color: #7289da; margin-bottom: 10px; }
+        input {
+            width: 85%;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+        button {
+            background: #7289da;
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover { background: #5b6eae; }
+        #result {
+            margin-top: 30px;
+            font-size: 22px;
+            min-height: 180px;
+        }
+        .success { color: #00ff00; animation: blink 1.5s infinite; }
+        .error { color: #ff4444; }
+        @keyframes blink { 50% { opacity: 0.6; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎁 REWARD CLAIM 🎁</h1>
+        <p>Enter code (XXXX-XXXX-XXXX-XXXX) - Can only be used once</p>
+        <input type="text" id="codeInput" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="20">
+        <br>
+        <button onclick="checkCode()">CLAIM REWARD NOW</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // 100 unique codes with rewards
+        const rewardDB = {
+            "E6NW-1BMU-A91J-I72P": "Discord Nitro 1 Month",
+            "FRQZ-V22J-4MHE-29MQ": "Discord Nitro 1 Year 🔥",
+            "PMKY-EH7Y-FLZN-D6I9": "5000 Robux",
+            "9CXU-IZEB-4GHS-6ZDL": "Minecraft Premium Redeem",
+            "TKNP-9TFG-BJ2M-RGKI": "Discord Nitro 1 Month",
+            "N5FK-6UML-B7TK-0WIV": "10000 Robux 💰",
+            "C761-GYN0-DDR9-M005": "Discord Nitro 1 Year",
+            "J7NW-PUD1-RMA0-1ZX4": "Minecraft Java + Bedrock",
+            "IEWN-29UY-0SAV-RNX7": "Discord Nitro 1 Month",
+            "VDKH-MSYQ-7VGG-Y825": "5000 Robux",
+            "ND8Q-BD51-IRQF-TYES": "Discord Nitro 1 Year",
+            "7RAQ-RM62-YLX9-QCDD": "Minecraft Premium",
+            "GAQQ-H42V-2PPL-46FB": "10000 Robux",
+            "6P6N-Q4CN-6EWX-J745": "Discord Nitro 1 Month",
+            "WTF8-6AS7-0UH6-2KC2": "Discord Nitro 1 Year",
+            "GIX1-PFKZ-EBVL-6JYI": "Minecraft Redeem Code",
+            "8HWX-YX3W-Y7L9-VC63": "5000 Robux",
+            "FB10-1JVR-F3QE-IPCN": "Discord Nitro 1 Month",
+            "0G2I-N261-SG23-R2ZC": "Discord Nitro 1 Year",
+            "ZG8U-28TZ-11ES-055Z": "10000 Robux",
+            "CSIW-OO7I-HRN7-OUUD": "Minecraft Premium",
+            "8KHN-UT3C-13H4-BL9X": "Discord Nitro 1 Month",
+            "64UI-2JOF-RWKR-0781": "Discord Nitro 1 Year",
+            "BO1J-PCAD-SUW9-5E6P": "5000 Robux",
+            "KYTR-A67N-M1YI-2CO1": "Minecraft Java",
+            "L6FK-IS75-48R1-78QS": "Discord Nitro 1 Month",
+            "G91I-60OY-FUO7-9MRR": "Discord Nitro 1 Year",
+            "L5TX-XD5W-C6YC-6H93": "10000 Robux",
+            "LRBM-YQMD-GART-GAOH": "Minecraft Premium",
+            "N3PQ-KZ9A-2KKD-OQAY": "Discord Nitro 1 Month",
+            "B6Y1-NFH0-Y43A-1LLA": "Discord Nitro 1 Year",
+            "JLU3-OOG1-FOEF-MU26": "5000 Robux",
+            "TB8B-TBIM-5ZRQ-796D": "Minecraft Redeem",
+            "R6S2-ZPT7-OA7K-DYUI": "Discord Nitro 1 Month",
+            "WBFH-XRWU-F0IN-1BJT": "Discord Nitro 1 Year",
+            "IAH7-GBSI-ZMWE-597E": "10000 Robux",
+            "2IKU-TJSG-HPT9-1TH4": "Minecraft Premium",
+            "IHAB-DII2-KT5V-QN7N": "Discord Nitro 1 Month",
+            "Y6HM-BTW3-DSQT-IT5R": "Discord Nitro 1 Year",
+            "3LCL-4SES-NH7W-CANY": "5000 Robux",
+            "FFE7-3SF3-PJ8L-XP6Q": "Minecraft Java",
+            "NQ8N-ZZY0-6KVC-71N1": "Discord Nitro 1 Month",
+            "AF6F-LY9M-EJW0-74FA": "Discord Nitro 1 Year",
+            "M5CQ-HI6M-8U5O-I88D": "10000 Robux",
+            "Y35D-4BCF-ATPY-KFHX": "Minecraft Premium",
+            "WS8E-KPP7-MTSY-4E0A": "Discord Nitro 1 Month",
+            "7WGE-WZRF-9K68-VZYU": "Discord Nitro 1 Year",
+            "XJT9-VUX2-HPO1-785U": "5000 Robux",
+            "GD6J-70DU-ALEX-GART": "Minecraft Redeem",
+            "G1FY-3LQY-E7YG-8AZ0": "Discord Nitro 1 Month",
+            "UZO6-B7OP-WZ4P-K7T1": "Discord Nitro 1 Year",
+            "MEL3-C7A9-D0UX-9UI4": "10000 Robux",
+            "OV69-7GS7-DGND-WNO5": "Minecraft Premium",
+            "QRAK-XS7I-1Z7H-Q4HR": "Discord Nitro 1 Month",
+            "MI7G-HQZY-W2GB-ANWD": "Discord Nitro 1 Year",
+            "8R3G-4CHG-QZOE-ZQNC": "5000 Robux",
+            "WYUW-SR8A-EHVM-3JQJ": "Minecraft Java",
+            "O4QR-SZWA-QKAH-LVEM": "Discord Nitro 1 Month",
+            "VNMB-JPJC-QTFX-4O7S": "Discord Nitro 1 Year",
+            "FVJ7-5MPP-2UKI-7RIA": "10000 Robux",
+            "41BK-M5Z5-SUQI-OS2W": "Minecraft Premium",
+            "I7RP-NRSO-4IVW-8NG4": "Discord Nitro 1 Month",
+            "YWZ9-1P4L-LKHQ-1XEK": "Discord Nitro 1 Year",
+            "SX9Y-2UJF-CN2B-WEET": "5000 Robux",
+            "36H5-5QZ9-MSAU-ASCX": "Minecraft Redeem",
+            "GPZ4-PDFQ-Q1LX-9P2Z": "Discord Nitro 1 Month",
+            "8N2G-FUDT-L023-YLGX": "Discord Nitro 1 Year",
+            "9P9M-G7JC-71DO-2JO4": "10000 Robux",
+            "0G8N-G8YQ-0OWA-SGIC": "Minecraft Premium",
+            "1D9U-J6IM-I42F-49YP": "Discord Nitro 1 Month",
+            "ROFT-G1UA-L5LQ-PLBA": "Discord Nitro 1 Year",
+            "4QDN-6A9R-9H05-CR5X": "5000 Robux",
+            "C1VX-P1B5-H0DH-5OVS": "Minecraft Java",
+            "8W1R-NNCC-IV12-PTGL": "Discord Nitro 1 Month",
+            "X3HJ-21W2-HABG-39TI": "Discord Nitro 1 Year",
+            "S9BD-LAIE-ML5L-B3HC": "10000 Robux",
+            "C9WK-XF5E-OQQE-XI1B": "Minecraft Premium",
+            "8TIO-DAJ7-893G-9LYC": "Discord Nitro 1 Month",
+            "HE94-D7UZ-ZUTS-NZFK": "Discord Nitro 1 Year",
+            "0S9C-HQ5T-PQ8T-B1KY": "5000 Robux",
+            "LNBA-1KA9-AH97-2FM1": "Minecraft Redeem",
+            "UU1K-C0MR-X6LM-SYLN": "Discord Nitro 1 Month",
+            "3SPB-0TP6-T99L-L9S6": "Discord Nitro 1 Year",
+            "S485-2FTJ-N61B-TAHQ": "10000 Robux",
+            "OCUY-QMMR-ZZUV-7MFZ": "Minecraft Premium",
+            "HXU3-LL97-EUWK-98X6": "Discord Nitro 1 Month",
+            "LF8L-80KH-G0KV-C08T": "Discord Nitro 1 Year",
+            "IPQH-NW86-1FSR-MGXV": "5000 Robux",
+            "MQDP-RREA-S3IH-8W7P": "Minecraft Java",
+            "D1T1-FFEV-1TSS-7C0F": "Discord Nitro 1 Month",
+            "SVMK-JO76-0620-8HYY": "Discord Nitro 1 Year",
+            "S0DR-RU0M-NIZ9-CU1N": "10000 Robux",
+            "KYV5-XQV4-GN1D-Q8YD": "Minecraft Premium",
+            "3JL2-LOUP-4KAS-DV1O": "Discord Nitro 1 Month",
+            "54M3-TOOV-X3NR-8BCJ": "Discord Nitro 1 Year",
+            "T9TG-JQEX-8RH8-1X6O": "5000 Robux",
+            "LU73-K428-EG62-XDHW": "Minecraft Redeem",
+            "KSKY-A1WP-GNE2-TONA": "Discord Nitro 1 Month",
+            "JAMW-Y7K4-D7YR-W75Q": "Discord Nitro 1 Year",
+            "Q6S2-DTBU-K49T-ACDB": "10000 Robux"
+        };
+
+        function checkCode() {
+            const input = document.getElementById('codeInput');
+            const code = input.value.trim().toUpperCase();
+            const resultDiv = document.getElementById('result');
+
+            if (code.length < 15) {
+                resultDiv.innerHTML = `<p class="error">❌ Code is too short! Use full format XXXX-XXXX-XXXX-XXXX.</p>`;
+                return;
+            }
+
+            // Check if already used
+            const used = JSON.parse(localStorage.getItem('usedCodes') || '[]');
+            if (used.includes(code)) {
+                resultDiv.innerHTML = `<p class="error">❌ This code has already been used! Only one time allowed.</p>`;
+                return;
+            }
+
+            if (rewardDB[code]) {
+                resultDiv.innerHTML = `<p>Verifying <strong>${code}</strong>...</p>`;
+
+                setTimeout(() => {
+                    const reward = rewardDB[code];
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ Code Verified Successfully!</p>
+                        <p><strong>Reward:</strong> ${reward}</p>
+                        <p>🎉 Reward will arrive in your DM in 3 days. Just wait!</p>
+                        <p style="font-size:14px; color:#aaa;">(Demo only - not real)</p>
+                    `;
+
+                    // Mark as used
+                    used.push(code);
+                    localStorage.setItem('usedCodes', JSON.stringify(used));
+                    input.value = '';
+                }, 1200);
+            } else {
+                resultDiv.innerHTML = `<p class="error">❌ Invalid Code! Try a valid one.</p>`;
+            }
+        }
+
+        // Allow Enter key
+        document.getElementById('codeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkCode();
+        });
+    </script>
+</body>
+</html>
